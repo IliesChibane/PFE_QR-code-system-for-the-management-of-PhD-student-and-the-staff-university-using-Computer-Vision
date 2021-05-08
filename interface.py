@@ -10,7 +10,15 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import numpy as np 
+import pandas as pd
+import cv2
+from pyzbar.pyzbar import decode
+import os
+import datetime as dt
 
+#VARIABLE GLOBALE PERMETTANT D'ETEINDRE LA WEBCAM APRES LA FIN DU SCAN
+os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
 
 
 class Ui_MainWindow(object):
@@ -832,7 +840,7 @@ class Ui_MainWindow(object):
         self.ImprimerBtn.setShortcut(_translate("MainWindow", "Ctrl+P"))
         self.ScannerBtn1.setText(_translate("MainWindow", "Utiliser le Scanner"))
         self.ScannerBtn1.setShortcut(_translate("MainWindow", "Ctrl+V"))
-        #self.ScannerBtn1.clicked.connect(fonctions.Scanner)
+        self.ScannerBtn1.clicked.connect(lambda: self.Scanner(1))
         self.label_17.setText(_translate("MainWindow", "Exemple : 2021 pour l\'année 2021-2022"))
         self.label_7.setText(_translate("MainWindow", "Afficher les informations d\'un doctorant"))
         self.label_13.setText(_translate("MainWindow", "©"))
@@ -840,9 +848,11 @@ class Ui_MainWindow(object):
         self.label_15.setText(_translate("MainWindow", "Auteur : Bourouina Rania et Chibane Ilies"))
         self.ScannerBtn2.setText(_translate("MainWindow", "Scanner"))
         self.ScannerBtn2.setShortcut(_translate("MainWindow", "Ctrl+V"))
+        self.ScannerBtn2.clicked.connect(lambda: self.Scanner(2))
         self.label_16.setText(_translate("MainWindow", " Matricule"))
         self.ChercherBtn.setText(_translate("MainWindow", "Chercher"))
         self.ChercherBtn.setShortcut(_translate("MainWindow", "Ctrl+V"))
+        self.ChercherBtn.clicked.connect(lambda: self.AffichInfo(self.Mat2.text()))
         self.nom.setText(_translate("MainWindow", "Nom :"))
         self.prenom.setText(_translate("MainWindow", "Prénom :"))
         self.sexe.setText(_translate("MainWindow", "Sexe :"))
@@ -863,6 +873,61 @@ class Ui_MainWindow(object):
         self.actionScanner_un_certificat.setText(_translate("MainWindow", "Scanner un certificat"))
         self.actionScanner_un_certificat.setStatusTip(_translate("MainWindow", "Scanner le QR code  d\'un certificat pour afficher toutes les informations du doctorant"))
         self.actionScanner_un_certificat.setShortcut(_translate("MainWindow", "Ctrl+S"))
+    def Scanner(self,S):
+        capture = cv2.VideoCapture(0)
+        recieved_data = None
+        a = 0
+        while True:
+            _, frame = capture.read()
+            decoded_data = decode(frame)
+            for QR in decode(frame):
+                data = decoded_data[0][0]
+                data = data.decode()
+                if data != recieved_data:
+                    recieved_data = data
+                    if S == 1:
+                        date = dt.datetime.now()
+                        if date.month < 9:
+                            print(str(date.year-1))
+                        else:
+                            print(str(date.year))
+                        self.Mat1.clear()
+                        self.Mat1.insert(data)
+                    elif S == 2:
+                        self.Mat2.clear()
+                        self.Mat2.insert(data)
+                    capture.release()
+                    cv2.destroyAllWindows()
+                    a = 1
+                    break
+            if a == 1:
+                break
+            cv2.imshow("QR CODE Scanner", frame)
+            # To exit press Esc Key.
+            key = cv2.waitKey(1)
+            if key == 27:
+                capture.release()
+                cv2.destroyAllWindows()
+                break
+    def AffichInfo(self,mat):
+        dt= pd.read_excel ('data.xlsx', sheet_name='Identification')
+        info = dt.loc[dt['Matricule'] == mat]
+        #print(info.index)
+        mat = info['Matricule'].to_string(index=False)
+        self.nom.setText("Nom : "+info['NOM'].to_string(index=False))
+        self.prenom.setText("Prenom : "+info['PRENOM'].to_string(index=False))
+        self.sexe.setText("Sexe : "+info['Sexe'].to_string(index=False))
+        self.dn.setText("Date de naissance : "+info['DATE DE NAISSANCE'].to_string(index=False))
+        self.ln.setText("Lieu de naissance : "+info['LIEU DE NAISSANCE'].to_string(index=False))
+        self.nationalie.setText("Nationalite : "+info['Nationalité'].to_string(index=False))
+        self.email.setText("Email : "+ info['Email'].to_string(index=False))
+        self.tel.setText("Telephone : "+ info['Telephone'].to_string(index=False))
+        self.boursier.setText("Boursier(Oui/Non) : "+ info['Boursier(Oui/Non)'].to_string(index=False))
+        self.salarie.setText("Salarié(Oui/Non) : "+info['Salarié(Oui/Non)'].to_string(index=False))
+        self.on.setText("Organisme Employeur : "+info['Organisme Employeur'].to_string(index=False))
+        
+
+
 
 
 if __name__ == "__main__":
