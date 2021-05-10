@@ -332,6 +332,9 @@ class Ui_MainWindow(object):
         self.Mat1.setObjectName("Mat1")
         self.VisualiserBtn = QtWidgets.QPushButton(self.page)
         self.VisualiserBtn.setGeometry(QtCore.QRect(360, 310, 191, 31))
+        self.label_PATH = QtWidgets.QLabel(self.page)
+        self.label_PATH.setGeometry(QtCore.QRect(500, 80, 111, 50))
+        self.label_PATH.setHidden(True)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(85, 170, 255, 90))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -867,6 +870,7 @@ class Ui_MainWindow(object):
         self.VisualiserBtn.clicked.connect(lambda: self.GenCertificat(self.Mat1.text(),str(self.dateEdit.date().year())))
         self.ImprimerBtn.setText(_translate("MainWindow", "Imprimer"))
         self.ImprimerBtn.setShortcut(_translate("MainWindow", "Ctrl+P"))
+        self.ImprimerBtn.clicked.connect(self.imprimer)
         self.ScannerBtn1.setText(_translate("MainWindow", "Utiliser le Scanner"))
         self.ScannerBtn1.setShortcut(_translate("MainWindow", "Ctrl+V"))
         self.label_17.setText(_translate("MainWindow", "Exemple : 2021 pour l\'année 2021-2022"))
@@ -1135,10 +1139,12 @@ class Ui_MainWindow(object):
             c.save()
             import subprocess
             subprocess.Popen([file], shell=True)
+            self.label_PATH.clear()
+            self.label_PATH.setText(file)
         else:
             print("Doctorant n'ayant pas droit au certificat de scolarité")
-    def imprimer(self,pdf):
-        os.startfile(pdf,"print")
+    def imprimer(self):
+        os.startfile(self.label_PATH.text(),"print")
 
 
 
