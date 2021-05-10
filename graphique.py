@@ -733,7 +733,7 @@ class Ui_MainWindow(object):
         self.dn.setFont(font)
         self.dn.setObjectName("dn")
         self.ln = QtWidgets.QLabel(self.page_2)
-        self.ln.setGeometry(QtCore.QRect(350, 230, 181, 20))
+        self.ln.setGeometry(QtCore.QRect(550, 220, 250, 40))
         self.ln.setWordWrap(True)
         
         self.ln.setFont(font)
@@ -762,7 +762,7 @@ class Ui_MainWindow(object):
         self.filiere.setFont(font)
         self.filiere.setObjectName("filiere")
         self.domaine = QtWidgets.QLabel(self.page_2)
-        self.domaine.setGeometry(QtCore.QRect(350, 290, 181, 20))
+        self.domaine.setGeometry(QtCore.QRect(350, 278, 181, 50))
         self.domaine.setWordWrap(True)
        
         self.domaine.setFont(font)
