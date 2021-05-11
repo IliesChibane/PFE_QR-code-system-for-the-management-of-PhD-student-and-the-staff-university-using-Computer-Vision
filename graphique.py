@@ -1016,7 +1016,9 @@ class Ui_MainWindow(object):
 
         c = canvas.Canvas(file)
 
-        c.drawImage("entete.jpg", 0, 10*inch, iw*0.6, ih*0.6, preserveAspectRatio=True)
+        c.drawImage("entete2.jpg", 0, 10*inch, iw*0.6, ih*0.6, preserveAspectRatio=True)
+        c.setFont("Helvetica", 16)
+        c.drawCentredString(5*inch, 10.5*inch, self.faculte)
 
         qri = utils.ImageReader(nomQR)
         qw, qh = qri.getSize()
