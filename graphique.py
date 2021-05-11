@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QDate
 import numpy as np 
 import pandas as pd
 import cv2
@@ -926,11 +927,13 @@ class Ui_MainWindow(object):
                 if data != recieved_data:
                     recieved_data = data
                     if S == 1:
-                        '''date = dt.datetime.now()
+                        date = dt.datetime.now()
                         if date.month < 9:
-                            print(str(date.year-1))
+                            d = QDate((date.year-1), 1, 1)
+                            self.dateEdit.setDate(d)
                         else:
-                            print(str(date.year))'''
+                            d = QDate(date.year, 1, 1)
+                            self.dateEdit.setDate(d)
                         self.Mat1.clear()
                         self.Mat1.insert(data)
                     elif S == 2:
@@ -941,6 +944,10 @@ class Ui_MainWindow(object):
                     a = 1
                     break
             if a == 1:
+                if S == 1:
+                    self.GenCertificat(self.Mat1.text(),str(self.dateEdit.date().year()))
+                elif S == 2:
+                    self.AffichInfo(self.Mat2.text())
                 break
             cv2.imshow("QR CODE Scanner", frame)
             # To exit press Esc Key.
@@ -958,19 +965,34 @@ class Ui_MainWindow(object):
         info = dt.loc[dt['Matricule'] == mat]
         sauv_index = info.index
         mat = info['Matricule'].to_string(index=False)
+        self.nom.clear();
+        print(info['NOM'].to_string(index=False))
         self.nom.setText("Nom : "+info['NOM'].to_string(index=False))
+        self.prenom.clear()
         self.prenom.setText("Prenom : "+info['PRENOM'].to_string(index=False))
+        self.doctorat.clear()
         self.doctorat.setText("Doctorat : "+ Sujet_Doctorat.loc[sauv_index,'Type de Doctorat'].to_string(index=False))
+        self.domaine.clear()
         self.domaine.setText("Domaine : "+ Sujet_Doctorat.loc[sauv_index,'Domaine'].to_string(index=False))
+        self.filiere.clear()
         self.filiere.setText("Filière : "+ Sujet_Doctorat.loc[sauv_index,'Filière'].to_string(index=False))
+        self.specialite.clear()
         self.specialite.setText("Spécialité : "+ Sujet_Doctorat.loc[sauv_index,'Spécialité'].to_string(index=False))
+        self.intitule.clear()
         self.intitule.setText("Intitulé du Sujet : "+ Sujet_Doctorat.loc[sauv_index,'Intitule du sujet'].to_string(index=False))
+        self.directeur_these.clear()
         self.directeur_these.setText("Directeur de thèse : "+ Directeur_thèse.loc[sauv_index,'Nom et Prénom du Directeur de thèse'].to_string(index=False))
+        self.directeur_these_2.clear()
         self.directeur_these_2.setText("Co-Directeur de thèse : "+ Directeur_thèse.loc[sauv_index,'Nom et Prénom du co-Directeur de thèse'].to_string(index=False))
+        self.ap.clear()
         self.ap.setText("Année de première inscription : " +  Historique_Inscriptions.loc[sauv_index,'Année de première  inscription'].to_string(index = False))
+        self.dn.clear()
         self.dn.setText("Date de naissance : "+info['DATE DE NAISSANCE'].to_string(index=False))
+        self.ln.clear()
         self.ln.setText("Lieu de naissance : "+info['LIEU DE NAISSANCE'].to_string(index=False))
+        self.email.clear()
         self.email.setText("Email : "+ info['Email'].to_string(index=False))
+        self.tel.clear()
         self.tel.setText("Telephone : "+ info['Telephone'].to_string(index=False))
         
     def GenCertificat(self,mat,ann):		
