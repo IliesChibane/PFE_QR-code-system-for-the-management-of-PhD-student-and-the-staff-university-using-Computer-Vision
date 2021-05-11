@@ -860,6 +860,8 @@ class Ui_MainWindow(object):
         self.faculteCombo.setItemText(1, _translate("MainWindow", "Faculté de Génie Civile"))
         self.label_2.setText(_translate("MainWindow", "Choisir faculté"))
         self.validerBtn.setText(_translate("MainWindow", "Valider"))
+        self.faculte = None
+        self.validerBtn.clicked.connect(self.ChoixFaculte)
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Acceuil"))
         self.label_USTHB_2.setText(_translate("MainWindow", "Université des Sciences et Technologie Houari Boumediene"))
         self.label_6.setText(_translate("MainWindow", "Génerer un Certificat de Scolarité"))
@@ -1025,7 +1027,7 @@ class Ui_MainWindow(object):
         c.drawCentredString(4*inch, 9.8*inch, "CERTIFICAT DE SCOLARITE")
         c.drawCentredString(4*inch, 9.4*inch, "POST-GRADUATION")
         c.setFont("Helvetica", 11)
-        c.drawString(inch, 8.5*inch, "Le Doyen de la Faculté d'Electronique et d'Informatique de l'Université des Sciences")
+        c.drawString(inch, 8.5*inch, "Le Doyen de la "+self.faculte+" de l'Université des Sciences")
         c.drawString(inch, 8.2*inch, "et de la Technologie Houari Boumediene Certifie que :")
         #c.drawString(inch, 7.9*inch, "")
         c.setFont("Helvetica-Bold", 11)
@@ -1128,7 +1130,7 @@ class Ui_MainWindow(object):
         c.setFont("Helvetica", 11)
         c.drawString(4.9*inch, 3.0*inch, "Le Doyen")
         c.setFont("Helvetica-Bold", 10)
-        c.drawCentredString(4*inch, 1.0*inch,"Faculté d'Electronique et d'Informatique")
+        c.drawCentredString(4*inch, 1.0*inch,self.faculte)
         c.setFont("Helvetica", 10)
         c.drawCentredString(4*inch, 0.8*inch,"USTHB, BP. 32, El Alia, Bab Ezzouar 16111, Alger")
         c.drawCentredString(4*inch, 0.6*inch,"Tel: +213023934066, Fax: +213023934066, email: pgfei@usthb.dz") 
@@ -1145,6 +1147,9 @@ class Ui_MainWindow(object):
             print("Doctorant n'ayant pas droit au certificat de scolarité")
     def imprimer(self):
         os.startfile(self.label_PATH.text(),"print")
+    def ChoixFaculte(self):
+        self.faculte = str(self.faculteCombo.currentText())
+        print(self.faculte)
 
 
 
