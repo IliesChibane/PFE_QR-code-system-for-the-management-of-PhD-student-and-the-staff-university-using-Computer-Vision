@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDate
+from PyQt5.QtGui import QPixmap
 import numpy as np 
 import pandas as pd
 import cv2
@@ -28,6 +29,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Image, Spacer, Page
 from reportlab.lib import utils
 from functools import partial
 import ast
+import shutil
 
 #VARIABLE GLOBALE PERMETTANT D'ETEINDRE LA WEBCAM APRES LA FIN DU SCAN
 os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
@@ -793,9 +795,10 @@ class Ui_MainWindow(object):
         self.directeur_these_2.setFont(font)
         self.directeur_these_2.setObjectName("directeur_these_2")
         self.qr = QtWidgets.QLabel(self.page_2)
-        self.qr.setGeometry(QtCore.QRect(760, 330, 130, 130))
+        self.qr.setGeometry(QtCore.QRect(760, 330, 100, 100))
         self.qr.setText("")
         self.qr.setObjectName("qr")
+        self.pathQR = ""
         self.photo = QtWidgets.QLabel(self.page_2)
         self.photo.setGeometry(QtCore.QRect(740, 50, 140, 140))
         self.photo.setText("")
@@ -966,7 +969,6 @@ class Ui_MainWindow(object):
         sauv_index = info.index
         mat = info['Matricule'].to_string(index=False)
         self.nom.clear();
-        print(info['NOM'].to_string(index=False))
         self.nom.setText("Nom : "+info['NOM'].to_string(index=False))
         self.prenom.clear()
         self.prenom.setText("Prenom : "+info['PRENOM'].to_string(index=False))
@@ -994,6 +996,19 @@ class Ui_MainWindow(object):
         self.email.setText("Email : "+ info['Email'].to_string(index=False))
         self.tel.clear()
         self.tel.setText("Telephone : "+ info['Telephone'].to_string(index=False))
+
+        p = info['photo'].to_string(index=False)[1:]
+        pdp = QPixmap(p)
+        pdp = pdp.scaled(140, 140);
+        self.photo.setPixmap(pdp)
+        paqr = ""
+        if(self.QRE(mat[1:] + ".png")==True):
+            paqr="QRcode"+ "\\" + mat[1:] + ".png"
+        else:
+            paqr = "QRcode"+"\\"+"NOQR.png"
+        pqr = QPixmap(paqr)
+        pqr = pqr.scaled(100,100)
+        self.qr.setPixmap(pqr)
         
     def GenCertificat(self,mat,ann):		
         df = pd.read_excel ('data.xlsx', sheet_name='Identification')
@@ -1027,153 +1042,181 @@ class Ui_MainWindow(object):
         année_inscription=année
 
 
-        file="certificat_doctorant"+nom+".pdf"
+        file="certificat_doctorant"+nom+"_"+ann+"_"+str(int(ann)+1)+".pdf"
 
-        img = utils.ImageReader("entete.jpg")
-        iw, ih = img.getSize()
+        if(self.CE(file)==False):
+            img = utils.ImageReader("entete.jpg")
+            iw, ih = img.getSize()
 
-        qr = pyqrcode.create(mat) 
-        nomQR = mat+'.png'
-        qr.png(nomQR,scale = 5)
+            nomQR = mat+'.png'
 
-        c = canvas.Canvas(file)
+            if(self.QRE(nomQR)==False):
+                self.GenQR(nomQR,mat)
 
-        c.drawImage("entete2.jpg", 0, 10*inch, iw*0.6, ih*0.6, preserveAspectRatio=True)
-        c.setFont("Helvetica", 16)
-        c.drawCentredString(5*inch, 10.5*inch, self.faculte)
+            c = canvas.Canvas(file)
 
-        qri = utils.ImageReader(nomQR)
-        qw, qh = qri.getSize()
-        c.drawImage(nomQR, 50, 100, 80, 80, preserveAspectRatio=True)
+            c.drawImage("entete2.jpg", 0, 10*inch, iw*0.6, ih*0.6, preserveAspectRatio=True)
+            c.setFont("Helvetica", 16)
+            c.drawCentredString(5*inch, 10.5*inch, self.faculte)
+
+            self.pathQR = "QRcode"+ "\\" + nomQR
+            qri = utils.ImageReader(self.pathQR)
+            qw, qh = qri.getSize()
+            c.drawImage(self.pathQR, 50, 100, 80, 80, preserveAspectRatio=True)
 
 
-        c.setFont("Helvetica-Bold", 16)
-        c.drawCentredString(4*inch, 9.8*inch, "CERTIFICAT DE SCOLARITE")
-        c.drawCentredString(4*inch, 9.4*inch, "POST-GRADUATION")
-        c.setFont("Helvetica", 11)
-        c.drawString(inch, 8.5*inch, "Le Doyen de la "+self.faculte+" de l'Université des Sciences")
-        c.drawString(inch, 8.2*inch, "et de la Technologie Houari Boumediene Certifie que :")
-        #c.drawString(inch, 7.9*inch, "")
-        c.setFont("Helvetica-Bold", 11)
-
-        if (sexe=="M").bool() :
-            c.drawString(1.2*inch, 7.5*inch, "Mr:")
-        else :
-            c.drawString(1.2*inch, 7.5*inch, "Melle :")
-        c.setFont("Helvetica", 11)
-        #c.drawString(2.0*inch, 7.5*inch, nom)
-        #c.drawString(2.6*inch, 7.5*inch, prenom)
-        t=Table(data, colWidths=None)
-        t.setStyle(TableStyle([('ALIGN', (0,0), (1, 1), 'LEFT')]))
-        aW = 460 # available width and height
-        aH = 900
-        w,h = t.wrap(aW, aH)
-        w=2*inch
-        h=7.18*inch
-
-        c.setFont("Helvetica-Bold", 11)
-        t.drawOn(c, w, h)#,2*inch, 5*inch)
-        if (sexe=="M").bool() :
-            c.drawString(1.2*inch, 7.1*inch, "Né le :")
-        else :
-            c.drawString(1.2*inch, 7.1*inch, "Née le :")
-        c.setFont("Helvetica", 11)
-        c.drawString(2.0*inch, 7.1*inch, date_naiss)
-        c.drawString(3.2*inch, 7.1*inch, "à :")
-        c.drawString(3.5*inch, 7.1*inch, lieu_naiss)
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(1.2*inch, 6.7*inch, "Nationalité :")
-        c.setFont("Helvetica", 11)
-        c.drawString(2.2*inch, 6.7*inch, nat)
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(1.2*inch, 6.3*inch, "Matricule :")
-        c.setFont("Helvetica", 11)
-        c.drawString(2.2*inch, 6.3*inch, mat)
-            
-        if Type_doct=="LMD" :
-            c.setFont("Helvetica-Bold", 11)
-            c.drawString(1.2*inch, 5.9*inch, "Domaine :")
-            if(Domaine=="MI"):
-                c.setFont("Helvetica", 11)
-                c.drawString(2.2*inch, 5.9*inch, "Mathématiques Informatique")
-            else:
-                c.setFont("Helvetica", 11)
-                c.drawString(2.2*inch, 5.9*inch, "Sciences et Technologies")
-            c.setFont("Helvetica-Bold", 11)
-            c.drawString(1.2*inch, 5.5*inch, "Filière :")
+            c.setFont("Helvetica-Bold", 16)
+            c.drawCentredString(4*inch, 9.8*inch, "CERTIFICAT DE SCOLARITE")
+            c.drawCentredString(4*inch, 9.4*inch, "POST-GRADUATION")
             c.setFont("Helvetica", 11)
-            c.drawString(2.2*inch, 5.5*inch, Filière)
+            c.drawString(inch, 8.5*inch, "Le Doyen de la "+self.faculte+" de l'Université des Sciences")
+            c.drawString(inch, 8.2*inch, "et de la Technologie Houari Boumediene Certifie que :")
+            #c.drawString(inch, 7.9*inch, "")
             c.setFont("Helvetica-Bold", 11)
-            c.drawString(1.2*inch, 5.1*inch, "Spécialité :")
-            c.setFont("Helvetica", 11)
-            c.drawString(2.2*inch, 5.1*inch, Spécialité)
-            if sexe=="M" :
-                c.drawString(1.0*inch, 4.7*inch, "est inscrit  au titre de l'année universitaire    ")
-            else :
-                c.drawString(1.0*inch, 4.7*inch, "est inscrite  au titre de l'année universitaire    ")
-            c.drawString(5.0*inch, 4.7*inch,ann)
-            c.drawString(5.35*inch, 4.7*inch, "/")
-            c.drawString(5.4*inch, 4.7*inch, str(int(ann)+1))
 
-            c.drawString(1.0*inch, 4.3*inch, "En: ")
-            c.drawString(1.3*inch, 4.3*inch, str(année_inscription))
-            if année_inscription <10 :
-                c.drawString(1.5*inch, 4.3*inch, "ème Année")
-            else :
-                c.drawString(1.7*inch, 4.3*inch, "ème Année")
-            c.drawString(2.35*inch, 4.3*inch, "Doctorat.")
-                        
-        else:
-            c.setFont("Helvetica-Bold", 11)
-            c.drawString(1.2*inch, 5.9*inch, "Filière :")
-            c.setFont("Helvetica-Bold", 11)
-            c.drawString(2.2*inch, 5.9*inch, Filière)
-            c.setFont("Helvetica", 11)
-            c.drawString(1.2*inch, 5.5*inch, "Spécialité :")
-            c.setFont("Helvetica-Bold", 11)
-            c.drawString(2.2*inch, 5.5*inch, Spécialité)
             if (sexe=="M").bool() :
-                c.drawString(1.0*inch, 5.1*inch, "est inscrit  au titre de l'année universitaire ")
+                c.drawString(1.2*inch, 7.5*inch, "Mr:")
             else :
-                c.drawString(1.0*inch, 5.1*inch, "est inscrite  au titre de l'année universitaire ")
-            c.drawString(5.0*inch, 5.1*inch, ann)
-            c.drawString(5.35*inch, 5.1*inch, "/")
-            c.drawString(5.4*inch, 5.1*inch, str(int(ann)+1))
+                c.drawString(1.2*inch, 7.5*inch, "Melle :")
+            c.setFont("Helvetica", 11)
+            #c.drawString(2.0*inch, 7.5*inch, nom)
+            #c.drawString(2.6*inch, 7.5*inch, prenom)
+            t=Table(data, colWidths=None)
+            t.setStyle(TableStyle([('ALIGN', (0,0), (1, 1), 'LEFT')]))
+            aW = 460 # available width and height
+            aH = 900
+            w,h = t.wrap(aW, aH)
+            w=2*inch
+            h=7.18*inch
 
-            c.drawString(1.0*inch, 4.7*inch, "En: ")
-            c.drawString(1.3*inch, 4.7*inch, str(année_inscription))
-            if année_inscription <10 :
-                c.drawString(1.5*inch, 4.7*inch, "ème Année")
+            c.setFont("Helvetica-Bold", 11)
+            t.drawOn(c, w, h)#,2*inch, 5*inch)
+            if (sexe=="M").bool() :
+                c.drawString(1.2*inch, 7.1*inch, "Né le :")
             else :
-                c.drawString(1.6*inch, 4.7*inch, "ème Année")
-            c.drawString(2.35*inch, 4.7*inch, "Doctorat en Sciences.")
-            
+                c.drawString(1.2*inch, 7.1*inch, "Née le :")
+            c.setFont("Helvetica", 11)
+            c.drawString(2.0*inch, 7.1*inch, date_naiss)
+            c.drawString(3.2*inch, 7.1*inch, "à :")
+            c.drawString(3.5*inch, 7.1*inch, lieu_naiss)
+            c.setFont("Helvetica-Bold", 11)
+            c.drawString(1.2*inch, 6.7*inch, "Nationalité :")
+            c.setFont("Helvetica", 11)
+            c.drawString(2.2*inch, 6.7*inch, nat)
+            c.setFont("Helvetica-Bold", 11)
+            c.drawString(1.2*inch, 6.3*inch, "Matricule :")
+            c.setFont("Helvetica", 11)
+            c.drawString(2.2*inch, 6.3*inch, mat)
+                
+            if Type_doct=="LMD" :
+                c.setFont("Helvetica-Bold", 11)
+                c.drawString(1.2*inch, 5.9*inch, "Domaine :")
+                if(Domaine=="MI"):
+                    c.setFont("Helvetica", 11)
+                    c.drawString(2.2*inch, 5.9*inch, "Mathématiques Informatique")
+                else:
+                    c.setFont("Helvetica", 11)
+                    c.drawString(2.2*inch, 5.9*inch, "Sciences et Technologies")
+                c.setFont("Helvetica-Bold", 11)
+                c.drawString(1.2*inch, 5.5*inch, "Filière :")
+                c.setFont("Helvetica", 11)
+                c.drawString(2.2*inch, 5.5*inch, Filière)
+                c.setFont("Helvetica-Bold", 11)
+                c.drawString(1.2*inch, 5.1*inch, "Spécialité :")
+                c.setFont("Helvetica", 11)
+                c.drawString(2.2*inch, 5.1*inch, Spécialité)
+                if sexe=="M" :
+                    c.drawString(1.0*inch, 4.7*inch, "est inscrit  au titre de l'année universitaire    ")
+                else :
+                    c.drawString(1.0*inch, 4.7*inch, "est inscrite  au titre de l'année universitaire    ")
+                c.drawString(5.0*inch, 4.7*inch,ann)
+                c.drawString(5.35*inch, 4.7*inch, "/")
+                c.drawString(5.4*inch, 4.7*inch, str(int(ann)+1))
 
-        c.drawString(4.7*inch, 3.3*inch, "Bab-Ezzouar, le :")
-        c.drawString(6.0*inch, 3.3*inch, dt.datetime.today().strftime("%d/%m/%Y"))
-        c.setFont("Helvetica", 11)
-        c.drawString(4.9*inch, 3.0*inch, "Le Doyen")
-        c.setFont("Helvetica-Bold", 10)
-        c.drawCentredString(4*inch, 1.0*inch,self.faculte)
-        c.setFont("Helvetica", 10)
-        c.drawCentredString(4*inch, 0.8*inch,"USTHB, BP. 32, El Alia, Bab Ezzouar 16111, Alger")
-        c.drawCentredString(4*inch, 0.6*inch,"Tel: +213023934066, Fax: +213023934066, email: pgfei@usthb.dz") 
-        c.setFont("Helvetica", 8)
-        c.line(0, 1.2*inch, 10*inch, 1.1*inch)
-        c.showPage()
-        if ((année_inscription <= 6) and (Type_doct !="LMD")) or ((année_inscription <= 5) and (Type_doct =="LMD")):
-            c.save()
-            import subprocess
-            subprocess.Popen([file], shell=True)
-            self.label_PATH.clear()
-            self.label_PATH.setText(file)
+                c.drawString(1.0*inch, 4.3*inch, "En: ")
+                c.drawString(1.3*inch, 4.3*inch, str(année_inscription))
+                if année_inscription <10 :
+                    c.drawString(1.5*inch, 4.3*inch, "ème Année")
+                else :
+                    c.drawString(1.7*inch, 4.3*inch, "ème Année")
+                c.drawString(2.35*inch, 4.3*inch, "Doctorat.")
+                            
+            else:
+                c.setFont("Helvetica-Bold", 11)
+                c.drawString(1.2*inch, 5.9*inch, "Filière :")
+                c.setFont("Helvetica-Bold", 11)
+                c.drawString(2.2*inch, 5.9*inch, Filière)
+                c.setFont("Helvetica", 11)
+                c.drawString(1.2*inch, 5.5*inch, "Spécialité :")
+                c.setFont("Helvetica-Bold", 11)
+                c.drawString(2.2*inch, 5.5*inch, Spécialité)
+                if (sexe=="M").bool() :
+                    c.drawString(1.0*inch, 5.1*inch, "est inscrit  au titre de l'année universitaire ")
+                else :
+                    c.drawString(1.0*inch, 5.1*inch, "est inscrite  au titre de l'année universitaire ")
+                c.drawString(5.0*inch, 5.1*inch, ann)
+                c.drawString(5.35*inch, 5.1*inch, "/")
+                c.drawString(5.4*inch, 5.1*inch, str(int(ann)+1))
+
+                c.drawString(1.0*inch, 4.7*inch, "En: ")
+                c.drawString(1.3*inch, 4.7*inch, str(année_inscription))
+                if année_inscription <10 :
+                    c.drawString(1.5*inch, 4.7*inch, "ème Année")
+                else :
+                    c.drawString(1.6*inch, 4.7*inch, "ème Année")
+                c.drawString(2.35*inch, 4.7*inch, "Doctorat en Sciences.")
+                
+
+            c.drawString(4.7*inch, 3.3*inch, "Bab-Ezzouar, le :")
+            c.drawString(6.0*inch, 3.3*inch, dt.datetime.today().strftime("%d/%m/%Y"))
+            c.setFont("Helvetica", 11)
+            c.drawString(4.9*inch, 3.0*inch, "Le Doyen")
+            c.setFont("Helvetica-Bold", 10)
+            c.drawCentredString(4*inch, 1.0*inch,self.faculte)
+            c.setFont("Helvetica", 10)
+            c.drawCentredString(4*inch, 0.8*inch,"USTHB, BP. 32, El Alia, Bab Ezzouar 16111, Alger")
+            c.drawCentredString(4*inch, 0.6*inch,"Tel: +213023934066, Fax: +213023934066, email: pgfei@usthb.dz") 
+            c.setFont("Helvetica", 8)
+            c.line(0, 1.2*inch, 10*inch, 1.1*inch)
+            c.showPage()
+            if ((année_inscription <= 6) and (Type_doct !="LMD")) or ((année_inscription <= 5) and (Type_doct =="LMD")):
+                c.save()
+                shutil.move(file, 'Certificat')
+                import subprocess
+                certPath = 'Certificat' + "\\"+ file
+                subprocess.Popen([certPath], shell=True)
+                self.label_PATH.clear()
+                self.label_PATH.setText(certPath)
+            else:
+                print("Doctorant n'ayant pas droit au certificat de scolarité")
         else:
-            print("Doctorant n'ayant pas droit au certificat de scolarité")
+            import subprocess
+            certPath = 'Certificat' + "\\"+ file
+            subprocess.Popen([certPath], shell=True)
+            self.label_PATH.clear()
+            self.label_PATH.setText(certPath)
     def imprimer(self):
         os.startfile(self.label_PATH.text(),"print")
     def ChoixFaculte(self):
         self.faculte = str(self.faculteCombo.currentText())
         print(self.faculte)
+
+    def QRE(self,nqr):
+        qrcodes = os.listdir('QRcode')
+        for qr in qrcodes:
+            if qr == nqr:
+                return True
+        return False
+    def CE(self,f):
+        cert = os.listdir('Certificat')
+        for c in cert:
+            if f == c:
+                return True
+        return False
+    def GenQR(self,nom,mat):
+        qr = pyqrcode.create(mat) 
+        qr.png(nom,scale = 5)
+        shutil.move(nom, 'QRcode')
 
 
 
