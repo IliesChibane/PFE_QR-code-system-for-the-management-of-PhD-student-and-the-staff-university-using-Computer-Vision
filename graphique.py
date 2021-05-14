@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QSizePolicy 
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QPixmap
 import numpy as np 
@@ -40,8 +41,10 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowIcon(QtGui.QIcon('USTHB_Logo.png'))
         MainWindow.resize(930, 714)
+        MainWindow.setFixedSize(930, 714)
         MainWindow.setStyleSheet("background-color: #ffffff ; border-color: #ffffff")
         MainWindow.setTabShape(QtWidgets.QTabWidget.Triangular)
+        MainWindow.setAnimated(True)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         font = QtGui.QFont()
         font.setFamily("Raleway Light")
@@ -145,6 +148,16 @@ class Ui_MainWindow(object):
         self.faculteCombo.setObjectName("faculteCombo")
         self.faculteCombo.addItem("")
         self.faculteCombo.addItem("")
+
+        self.validation = QtWidgets.QLabel(self.tab)
+        self.validation.setFont(font)
+        self.validation.setGeometry(QtCore.QRect(150, 300, 700, 30))
+        self.validation.setStyleSheet("color: red; background-color: transparent; font-size: 10pt;")
+        self.validation.setText("Aucune faculté selectionnée")
+        self.validation.setScaledContents(True)
+        self.validation.setObjectName("validation")
+
+
         self.line = QtWidgets.QFrame(self.tab)
         self.line.setGeometry(QtCore.QRect(10, 190, 301, 20))
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -1199,7 +1212,10 @@ class Ui_MainWindow(object):
         os.startfile(self.label_PATH.text(),"print")
     def ChoixFaculte(self):
         self.faculte = str(self.faculteCombo.currentText())
-        print(self.faculte)
+        #print(self.faculte)
+        self.validation.setText("La faculté "+ self.faculte + " a bien été selectionnée")
+        self.validation.setStyleSheet("color: green; font-size: 10pt;")
+        self.validation.setWordWrap(True)
 
     def QRE(self,nqr):
         qrcodes = os.listdir('QRcode')
