@@ -874,7 +874,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Gestion des certificats de scolarité"))
         self.label_USTHB.setText(_translate("MainWindow", "Université des Sciences et Technologie Houari Boumediene"))
         self.faculteCombo.setItemText(0, _translate("MainWindow", "Faculté d\'électronique et d\'informatique"))
-        self.faculteCombo.setItemText(1, _translate("MainWindow", "Faculté de Génie Civile"))
+        self.faculteCombo.setItemText(1, _translate("MainWindow", "Faculté de Génie Civil"))
         self.label_2.setText(_translate("MainWindow", "Choisir faculté"))
         self.validerBtn.setText(_translate("MainWindow", "Valider"))
         self.faculte = None
@@ -1068,7 +1068,7 @@ class Ui_MainWindow(object):
 
             c = canvas.Canvas(file)
 
-            c.drawImage("entete2.jpg", 0, 10*inch, iw*0.6, ih*0.6, preserveAspectRatio=True)
+            c.drawImage("entete.jpg", 0, 10*inch, iw*0.6, ih*0.6, preserveAspectRatio=True)
             c.setFont("Helvetica", 16)
             c.drawCentredString(5*inch, 10.5*inch, self.faculte)
 
