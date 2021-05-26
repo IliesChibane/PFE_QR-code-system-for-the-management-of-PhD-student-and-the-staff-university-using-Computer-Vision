@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QSizePolicy 
+from PyQt5.QtWidgets import QSizePolicy, QApplication
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QPixmap
 import numpy as np 
@@ -40,8 +40,10 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowIcon(QtGui.QIcon('USTHB_Logo.png'))
-        MainWindow.resize(930, 714)
-        MainWindow.setFixedSize(930, 714)
+        h = QApplication.desktop().size().height()
+        w = QApplication.desktop().size().width()
+        MainWindow.resize(w*0.8, h*0.8)
+        MainWindow.setFixedSize(w*0.8, h*0.8)
         MainWindow.setStyleSheet("background-color: #ffffff ; border-color: #ffffff")
         MainWindow.setTabShape(QtWidgets.QTabWidget.Triangular)
         MainWindow.setAnimated(True)
