@@ -39,10 +39,10 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowIcon(QtGui.QIcon('USTHB_Logo.png'))
-        h = QApplication.desktop().size().height()*0.8
+        h = QApplication.desktop().size().height()*0.9
         w = QApplication.desktop().size().width()*0.8
         print((h-180)//14*20)
-        inc = (h-180)//(20)
+        inc = (h-180)//(23)
         debInfo = 180
         MainWindow.resize(w, h)
         MainWindow.setFixedSize(w, h)
@@ -835,7 +835,7 @@ class Ui_MainWindow(object):
         self.qr.setObjectName("qr")
         self.pathQR = ""
         self.photo = QtWidgets.QLabel(self.page_2)
-        self.photo.setGeometry(QtCore.QRect(w-2050, 50, 140, 140))
+        self.photo.setGeometry(QtCore.QRect(w-200, h-650, 140, 140))
         self.photo.setText("")
         self.photo.setObjectName("photo")
         self.stackedWidget.addWidget(self.page_2)
