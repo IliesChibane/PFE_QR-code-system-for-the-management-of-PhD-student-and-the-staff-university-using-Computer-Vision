@@ -731,7 +731,7 @@ class Ui_MainWindow(object):
         self.ChercherBtn.setFlat(False)
         self.ChercherBtn.setObjectName("ChercherBtn")
         self.nom = QtWidgets.QLabel(self.page_2)
-        self.nom.setGeometry(QtCore.QRect(40, debInfo, 850, 20))
+        self.nom.setGeometry(QtCore.QRect(40, debInfo, w*0.77, h*0.028))
         self.nom.setWordWrap(True)
         font = QtGui.QFont()
         font.setFamily("Roboto")
@@ -742,56 +742,56 @@ class Ui_MainWindow(object):
         self.nom.setObjectName("nom")
 
         self.prenom = QtWidgets.QLabel(self.page_2)
-        self.prenom.setGeometry(QtCore.QRect(40, debInfo + inc, 850, 20))
+        self.prenom.setGeometry(QtCore.QRect(40, debInfo + inc, w*0.77, h*0.028))
         self.prenom.setWordWrap(True)
         self.prenom.setFont(font)
         self.prenom.setObjectName("prenom")
 
         self.dn = QtWidgets.QLabel(self.page_2)
-        self.dn.setGeometry(QtCore.QRect(40, debInfo+(inc*2), 850, 20))  
+        self.dn.setGeometry(QtCore.QRect(40, debInfo+(inc*2), w*0.77, h*0.028))  
         self.dn.setWordWrap(True)
         self.dn.setFont(font)
         self.dn.setObjectName("dn")
 
         self.ln = QtWidgets.QLabel(self.page_2)
-        self.ln.setGeometry(QtCore.QRect(40, debInfo+(inc*3), 850, 20))
+        self.ln.setGeometry(QtCore.QRect(40, debInfo+(inc*3), w*0.77, h*0.028))
         self.ln.setWordWrap(True)
         
         self.email = QtWidgets.QLabel(self.page_2)
-        self.email.setGeometry(QtCore.QRect(40, debInfo+(inc*4), 850, 20))
+        self.email.setGeometry(QtCore.QRect(40, debInfo+(inc*4), w*0.77, h*0.028))
 
         self.tel = QtWidgets.QLabel(self.page_2)
-        self.tel.setGeometry(QtCore.QRect(40, debInfo+(inc*5), 850, 20))
+        self.tel.setGeometry(QtCore.QRect(40, debInfo+(inc*5), w*0.77, h*0.028))
 
         self.doctorat = QtWidgets.QLabel(self.page_2)
-        self.doctorat.setGeometry(QtCore.QRect(40, debInfo+inc*6, 850, 20))
+        self.doctorat.setGeometry(QtCore.QRect(40, debInfo+inc*6, w*0.77, h*0.028))
         self.doctorat.setWordWrap(True)
         self.doctorat.setFont(font)
         self.doctorat.setObjectName("doctorat")
 
         self.filiere = QtWidgets.QLabel(self.page_2)
-        self.filiere.setGeometry(QtCore.QRect(40, debInfo+(inc*7), 850, 20))
+        self.filiere.setGeometry(QtCore.QRect(40, debInfo+(inc*7), w*0.77, h*0.028))
 
         self.domaine = QtWidgets.QLabel(self.page_2)
-        self.domaine.setGeometry(QtCore.QRect(40, debInfo+(inc*8), 850, 20))
+        self.domaine.setGeometry(QtCore.QRect(40, debInfo+(inc*8), w*0.77, h*0.028))
 
         self.specialite = QtWidgets.QLabel(self.page_2)
-        self.specialite.setGeometry(QtCore.QRect(40, debInfo+(inc*9), 850, 20))
+        self.specialite.setGeometry(QtCore.QRect(40, debInfo+(inc*9), w*0.77, h*0.028))
 
         self.intitule = QtWidgets.QLabel(self.page_2)
         self.intitule.setFont(font)
         self.intitule.setWordWrap(True)
         self.intitule.setObjectName("intitule")
-        self.intitule.setGeometry(QtCore.QRect(40, debInfo+(inc*10), 850, 20))
+        self.intitule.setGeometry(QtCore.QRect(40, debInfo+(inc*10), w*0.77, h*0.028))
 
         self.ap = QtWidgets.QLabel(self.page_2)
-        self.ap.setGeometry(QtCore.QRect(40, debInfo+(inc*11), 850, 20))
+        self.ap.setGeometry(QtCore.QRect(40, debInfo+(inc*11), w*0.77, h*0.028))
 
         self.directeur_these = QtWidgets.QLabel(self.page_2)
-        self.directeur_these.setGeometry(QtCore.QRect(40, debInfo+(inc*12), 850, 20))
+        self.directeur_these.setGeometry(QtCore.QRect(40, debInfo+(inc*12), w*0.77, h*0.028))
 
         self.directeur_these_2 = QtWidgets.QLabel(self.page_2)
-        self.directeur_these_2.setGeometry(QtCore.QRect(40, debInfo+(inc*13), 850, 20))
+        self.directeur_these_2.setGeometry(QtCore.QRect(40, debInfo+(inc*13), w*0.77, h*0.028))
 
         self.ln.setFont(font)
         self.ln.setObjectName("ln")
