@@ -142,7 +142,7 @@ class Ui_MainWindow(object):
         self.label_USTHB.setWordWrap(True)
         self.label_USTHB.setObjectName("label_USTHB")
         self.faculteCombo = QtWidgets.QComboBox(self.tab)
-        self.faculteCombo.setGeometry(QtCore.QRect(150, 330, 500, 31))
+        self.faculteCombo.setGeometry(QtCore.QRect(150, 360, 500, 31))
         font = QtGui.QFont()
         font.setFamily("Calibri Light")
         font.setPointSize(12)
