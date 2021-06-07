@@ -16,6 +16,7 @@ import pandas as pd
 import cv2
 from pyzbar.pyzbar import decode
 import pyqrcode
+import segno
 import os
 import datetime as dt
 from pyzbar.pyzbar import decode
@@ -193,7 +194,7 @@ class Ui_MainWindow(object):
 "")
         self.label_2.setObjectName("label_2")
         self.validerBtn = QtWidgets.QPushButton(self.tab)
-        self.validerBtn.setGeometry(QtCore.QRect(560, h//2, 191, 31))
+        self.validerBtn.setGeometry(QtCore.QRect(560, h//2+50, 191, 31))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(85, 170, 255, 90))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -1312,8 +1313,8 @@ class Ui_MainWindow(object):
                 return True
         return False
     def GenQR(self,nom,mat):
-        qr = pyqrcode.create(mat) 
-        qr.png(nom,scale = 5)
+        qr = segno.make(mat, version=1) 
+        qr.save(nom,scale = 5)
         shutil.move(nom, 'QRcode')
 
 
